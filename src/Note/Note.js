@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { format } from 'date-fns'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import './Note.css'
@@ -28,4 +28,7 @@ export default function Note(props) {
       </div>
     </div>
   )
+}
+Note.propType={
+  Note__title: []
 }
