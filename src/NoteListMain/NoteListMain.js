@@ -1,17 +1,23 @@
-import React from 'react'
+import React, {Component} from 'react'
 import { Link } from 'react-router-dom'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Note from '../Note/Note'
 import CircleButton from '../CircleButton/CircleButton'
-import './NoteListMain.css'
+import './NoteListMain.css';
+import Apicontext from '../ApiContext';
+import { getNotesForFolder } from '../notes-helpers';
 
-export default function NoteListMain(props) {
+export default class NoteListMain extends Component {
+  static contextType = Apicontext;
+  render() {
+    const {folderId} = this.props.match.params;
   return (
     <section className='NoteListMain'>
       <ul>
-        {props.notes.map(note =>
+      {getNotesForFolder(this.context.notes, folderId).map(note =>
           <li key={note.id}>
             <Note
+            handleDelete={this.context.handleDelete}
               id={note.id}
               name={note.name}
               modified={note.modified}
@@ -32,7 +38,7 @@ export default function NoteListMain(props) {
         </CircleButton>
       </div>
     </section>
-  )
+  )}
 }
 
 NoteListMain.defaultProps = {

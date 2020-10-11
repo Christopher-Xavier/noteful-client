@@ -21,6 +21,6 @@ export default function NotePageMain(props) {
 
 NotePageMain.defaultProps = {
   note: {
-    content: '',
+    content: 'noteId',
   }
 }

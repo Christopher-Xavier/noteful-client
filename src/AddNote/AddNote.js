@@ -1,84 +1,59 @@
-import React, { Component } from 'react'
-import NotefulForm from '../NotefulForm/NotefulForm'
-import ApiContext from '../ApiContext'
-import config from '../config'
-import './AddNote.css'
+import React, { Component } from "react";
+import NotefulContext from "../NotefulContext.js";
+import PropTypes from 'prop-types'
+import './AddNote.css';
 
 export default class AddNote extends Component {
-  static defaultProps = {
-    history: {
-      push: () => { }
-    },
+  constructor(props) {
+    super(props);
+    this.nameInput = React.createRef();
+    this.bodyInput = React.createRef();
+    this.folderIdInput = React.createRef();
   }
-  static contextType = ApiContext;
 
-  handleSubmit = (e) => {
-    e.preventDefault()
-    const newNote = {
-      note_name: e.target['note-name'].value,
-      content: e.target['note-content'].value,
-      folder_id: e.target['note-folder-id'].value,
-      modified: new Date(),
-    }
-    fetch(`${config.API_ENDPOINT}/notes`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(newNote),
+  static contextType = NotefulContext;
+
+  handleSubmit(event) {
+    event.preventDefault();
+    this.props.resetFunction();
+    this.context.post({
+      note_name: this.nameInput.current.value,
+      folder_id: this.folderIdInput.current.value,
+      content: this.bodyInput.current.value
+    }, "notes");
+  }
+
+  mapFolders = () => {
+    const folders = this.context.folders.map((folder, idx) => {
+      return (
+        <option key={idx} value={folder.id}>{folder.folder_name}</option>
+      )
     })
-      .then(res => {
-        if (!res.ok)
-          return res.json().then(e => Promise.reject(e))
-        return res.json()
-      })
-      .then(note => {
-        this.context.addNote(note)
-        this.props.history.push(`/`)
-      })
-      .catch(error => {
-        console.error({ error })
-      })
+    return folders;
   }
 
   render() {
-    const { folders=[] } = this.context
-    return (
-      <section className='AddNote'>
-        <h2>Create a note</h2>
-        <NotefulForm onSubmit={this.handleSubmit}>
-          <div className='field'>
-            <label htmlFor='note-name-input'>
-              Name
-            </label>
-            <input type='text' id='note-name-input' name='note-name' />
-          </div>
-          <div className='field'>
-            <label htmlFor='note-content-input'>
-              Content
-            </label>
-            <textarea id='note-content-input' name='note-content' />
-          </div>
-          <div className='field'>
-            <label htmlFor='note-folder-select'>
-              Folder
-            </label>
-            <select id='note-folder-select' name='note-folder-id'>
-              <option value={null}>...</option>
-              {folders.map(folder =>
-                <option key={folder.id} value={folder.id}>
-                  {folder.folder_name}
-                </option>
-              )}
-            </select>
-          </div>
-          <div className='buttons'>
-            <button type='submit'>
-              Add note
-            </button>
-          </div>
-        </NotefulForm>
-      </section>
-    )
-  }
+    if (this.props.active) {
+      return (
+        <form className="add-note note-form" onSubmit={e => this.handleSubmit(e)}>
+          <label htmlFor="add-note">Add Note</label>
+          <input name="note-name" id="note-name" type="text" ref={this.nameInput} placeholder={'Note Name'} required></input>
+          <input name="note-body" id="note-body" type="text" ref={this.bodyInput} placeholder={'Note Content'} required></input>
+          <label htmlFor="select-folder">Choose a folder</label>
+          <select id="select-folder" name="select-folder" ref={this.folderIdInput}>
+            {this.mapFolders()}
+          </select>
+          <input type="submit" value="Submit" id="add-note-submit" />
+          {/* after we update the list and click submit we should set state in folderList back to false */}
+        </form>
+      );
+    }
+    return <></>
+  };
+}
+
+AddNote.propTypes = {
+  active: PropTypes.bool.isRequired,
+  folderId: PropTypes.string.isRequired,
+  resetFunction: PropTypes.func.isRequired
 }

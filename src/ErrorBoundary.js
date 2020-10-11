@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-
-export default class ErrorBoundary extends Component {
+ class NotefulError extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -21,3 +20,4 @@ export default class ErrorBoundary extends Component {
         return this.props.children;
       }  
 }
+export default NotefulError

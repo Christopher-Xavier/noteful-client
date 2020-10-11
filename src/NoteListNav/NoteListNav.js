@@ -14,7 +14,7 @@ export default function NoteListNav(props) {
             <NavLink
               className='NoteListNav__folder-link'
               to={`/folder/${folder.id}`}
-            >
+            ><label>input type=""</label>
               <span className='NoteListNav__num-notes'>
                 {countNotesForFolder(props.notes, folder.id)}
               </span>
